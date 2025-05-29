@@ -43,14 +43,16 @@ import static java.util.Objects.requireNonNull;
 /**
  * huaixin 2021/12/25 10:54 AM
  */
+// zeng: expression analyzer and 这个expression的context. 每个expression会创建一个expression analyzer. context的内容会被组装进Analysis对象
 public class ExpressionAnalyzer {
-
+    // zeng: statement analysis
     private final Analysis analysis;
 
     private final MetadataService metadataService;
 
     private final SqlFlowParser sqlFlowParser;
 
+    // zeng: expression node -> return data type
     private final Map<NodeRef<Expression>, Type> expressionTypes = new LinkedHashMap<>();
 
     private final Set<NodeRef<SubqueryExpression>> subqueries = new LinkedHashSet<>();
@@ -59,23 +61,23 @@ public class ExpressionAnalyzer {
     private final Set<NodeRef<Expression>> typeOnlyCoercions = new LinkedHashSet<>();
 
     private final Set<NodeRef<InPredicate>> subqueryInPredicates = new LinkedHashSet<>();
-    private final Map<NodeRef<Expression>, ResolvedField> columnReferences = new LinkedHashMap<>();
+    private final Map<NodeRef<Expression>, ResolvedField> columnReferences = new LinkedHashMap<>(); // zeng: expression node ->  `resolve field used by expression` set
     private final Set<NodeRef<QuantifiedComparisonExpression>> quantifiedComparisons = new LinkedHashSet<>();
     private final Set<NodeRef<FunctionCall>> windowFunctions = new LinkedHashSet<>();
 
     private final Map<NodeRef<Identifier>, LambdaArgumentDeclaration> lambdaArgumentReferences = new LinkedHashMap<>();
-    private final Multimap<QualifiedObjectName, String> tableColumnReferences = HashMultimap.create();
+    private final Multimap<QualifiedObjectName, String> tableColumnReferences = HashMultimap.create();  // zeng: table -> `column be used`
     private final Set<NodeRef<FunctionCall>> patternRecognitionFunctions = new LinkedHashSet<>();
 
     // Track referenced fields from source relation node
-    private final Multimap<NodeRef<Node>, Field> referencedFields = HashMultimap.create();
+    private final Multimap<NodeRef<Node>, Field> referencedFields = HashMultimap.create();  // zeng: source node -> `field be used` set
 
     // Record fields prefixed with labels in row pattern recognition context
     private final Map<NodeRef<DereferenceExpression>, LabelPrefixedReference> labelDereferences = new LinkedHashMap<>();
 
     private final Map<NodeRef<Parameter>, Expression> parameters;
     private final Function<Node, Analysis.ResolvedWindow> getResolvedWindow;
-    private final List<Field> sourceFields = new ArrayList<>();
+    private final List<Field> sourceFields = new ArrayList<>(); // zeng: source relation field be used
 
     public Map<NodeRef<Expression>, Type> getExpressionCoercions() {
         return unmodifiableMap(expressionCoercions);
@@ -177,7 +179,7 @@ public class ExpressionAnalyzer {
     }
 
     private class Visitor
-            extends AstVisitor<Type, Context> {
+            extends AstVisitor<Type, Context> { // zeng: override ast visitor
         // Used to resolve FieldReferences (e.g. during local execution planning)
         private final Scope baseScope;
 

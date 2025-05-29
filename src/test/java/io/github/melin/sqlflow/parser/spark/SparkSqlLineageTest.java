@@ -21,14 +21,26 @@ public class SparkSqlLineageTest extends AbstractSqlLineageTest {
 
     @Test
     public void testInsertInto() throws Exception {
-        String sql = "with sdfa as (select concat(a.COL1, '-', a.COL2), a.desc," +
-                "substr(current_timestamp(),1,19) AS data_store_time, current_date - INTERVAL 10 MINUTE as dd " +
-                "from db1.test a where ds='201912') insert overwrite table db2.Demo select * from sdfa";
+        final StringBuilder sb = new StringBuilder();
+        sb.append("with sdfa as (                                                          \n");
+        sb.append("               select                                                   \n");
+        sb.append("                 concat(a.COL1, '-', a.COL2),                           \n");
+        sb.append("                 a.desc,                                                \n");
+        sb.append("                 substr(current_timestamp(), 1, 19) AS data_store_time, \n");
+        sb.append("                 current_date - INTERVAL 10 MINUTE  as dd               \n");
+        sb.append("               from db1.test a                                          \n");
+        sb.append("               where ds = '201912'                                      \n");
+        sb.append("             )                                                          \n");
+        sb.append("insert overwrite table db2.Demo                                         \n");
+        sb.append("select *                                                                \n");
+        sb.append("from sdfa                                                               \n");
+
+        final String sql = sb.toString();
         Statement statement = SQL_PARSER.createStatement(sql);
 
         Analysis analysis = new Analysis(statement, emptyMap());
         StatementAnalyzer statementAnalyzer = new StatementAnalyzer(analysis, new SimpleSparkMetadataService(), SQL_PARSER);
-        
+
         statementAnalyzer.analyze(statement, Optional.empty());
 
         //System.out.println(SqlFormatter.formatSql(statement));

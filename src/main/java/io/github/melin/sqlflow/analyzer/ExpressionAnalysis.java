@@ -15,7 +15,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * huaixin 2021/12/25 10:52 AM
  */
-public class ExpressionAnalysis {
+public class ExpressionAnalysis {   // zeng: expression的context, copy from ExpressionAnalyzer
     private final Map<NodeRef<Expression>, Type> expressionTypes;
     private final Map<NodeRef<Expression>, Type> expressionCoercions;
     private final Set<NodeRef<Expression>> typeOnlyCoercions;

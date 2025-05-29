@@ -33,12 +33,19 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.util.Objects.requireNonNull;
 
+// zeng: 本层子查询作用域context
 @Immutable
 public class Scope {
+    // zeng: 本子查询往上一层的查询。因为关系代数其实是line，所以一个parent和child是一对一的。
     private final Optional<Scope> parent;
     private final boolean queryBoundary;
+    // zeng: relation node of current relation
     private final RelationId relationId;
+
+    // zeng: current relation info
     private final RelationType relation;
+
+    // zeng: with query name -> with query
     private final Map<String, WithQuery> namedQueries;
     private final boolean caseSensitive;
 
@@ -79,6 +86,7 @@ public class Scope {
         return scope;
     }
 
+    // zeng: find root of scope tree
     public Optional<Scope> getOuterQueryParent() {
         Scope scope = this;
         while (scope.parent.isPresent()) {

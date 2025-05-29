@@ -11,11 +11,17 @@ import static java.util.Objects.requireNonNull;
 
 public class Field {
     private NodeLocation location;
+
+    // zeng: table of column relative, if this field is recursive from the column of the table
     private final Optional<QualifiedObjectName> originTable;
+    // zeng: column of table relative, if this field is recursive from the column of the table
     private final Optional<String> originColumnName;
+    // zeng: alias of relation which contain field
     private final Optional<QualifiedName> relationAlias;
+    // zeng: field name
     private final Optional<String> name;
-    private Type type;
+    private Type type;  // zeng: field data type
+    // zeng: if field name is alias
     private final boolean aliased;
 
     public static Field newUnqualified(String name) {

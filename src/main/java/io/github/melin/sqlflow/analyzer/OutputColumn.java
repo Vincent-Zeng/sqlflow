@@ -12,8 +12,8 @@ import static java.util.Objects.requireNonNull;
 
 @Immutable
 public final class OutputColumn {
-    private final String column;
-    private final Set<Analysis.SourceColumn> sourceColumns;
+    private final String column;    // zeng: output column
+    private final Set<Analysis.SourceColumn> sourceColumns;  // zeng: original column set
 
     @JsonCreator
     public OutputColumn(@JsonProperty("column") String column, @JsonProperty("sourceColumns") Set<Analysis.SourceColumn> sourceColumns) {

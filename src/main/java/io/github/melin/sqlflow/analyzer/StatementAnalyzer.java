@@ -97,7 +97,9 @@ public class StatementAnalyzer {
         @Override
         public Scope process(Node node, Optional<Scope> scope) {
             Scope returnScope = super.process(node, scope);
+            // zeng: 检查子树节点返回的scope的root是否是预期的root
             checkState(returnScope.getOuterQueryParent().equals(outerQueryScope), "result scope should have outer query scope equal with parameter outer query scope");
+            // zeng: 检查子树节点返回的scope的parent是否是当前节点的scope
             scope.ifPresent(value -> checkState(hasScopeAsLocalParent(returnScope, value), "return scope should have context scope as one of its ancestors"));
             return returnScope;
         }
@@ -253,6 +255,7 @@ public class StatementAnalyzer {
 
             List<Field> outputFields = fields.build();
 
+            // zeng: table scope
             Scope tableScope = createAndAssignScope(table, scope, outputFields);
 
             if (updateKind.isPresent()) {
@@ -312,6 +315,7 @@ public class StatementAnalyzer {
             return createScopeForView(table, name, scope, view.getOriginalSql(), view.getCatalog(), view.getSchema(), view.getColumns());
         }
 
+        // zeng: todo
         private Scope createScopeForView(Table table, QualifiedObjectName name, Optional<Scope> scope, String originalSql, Optional<String> catalog, Optional<String> schema, List<ViewColumn> columns) {
             Statement statement = analysis.getStatement();
             if (statement instanceof CreateView) {
@@ -679,6 +683,7 @@ public class StatementAnalyzer {
                 inputFields = relationType.getVisibleFields();
             }
 
+            // zeng: build current node relation
             RelationType descriptor = relationType.withAlias(relation.getAlias().getValue(), aliases);
 
             checkArgument(inputFields.size() == descriptor.getAllFieldCount(), "Expected %s fields, got %s", descriptor.getAllFieldCount(), inputFields.size());
@@ -873,6 +878,7 @@ public class StatementAnalyzer {
             // TODO: extract candidate names from SELECT, WHERE, HAVING, GROUP BY and ORDER BY expressions
             // to pass down to analyzeFrom
 
+            // zeng: 一个node里的组成部分，之间也有优先级，优先级高的先visit。这里优先级最高的是from。
             Scope sourceScope = analyzeFrom(node, scope);
 
             analyzeWindowDefinitions(node, sourceScope);
@@ -883,7 +889,7 @@ public class StatementAnalyzer {
             List<Expression> outputExpressions = analyzeSelect(node, sourceScope);
             Analysis.GroupingSetAnalysis groupByAnalysis = analyzeGroupBy(node, sourceScope, outputExpressions);
             analyzeHaving(node, sourceScope);
-
+            // zeng: current node scope
             Scope outputScope = computeAndAssignOutputScope(node, scope, sourceScope);
 
             List<Expression> orderByExpressions = emptyList();

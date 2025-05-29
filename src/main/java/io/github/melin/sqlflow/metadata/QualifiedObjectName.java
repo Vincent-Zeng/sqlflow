@@ -11,6 +11,7 @@ import java.util.Objects;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
+// zeng: catalog.schema.`column/other object1
 @Immutable
 public class QualifiedObjectName {
     @JsonCreator

@@ -31,60 +31,69 @@ import static java.util.Objects.requireNonNull;
 /**
  * huaixin 2021/12/24 1:49 PM
  */
+// zeng: Scope是子查询作用域context，Analysis是整个statement的context
 public class Analysis {
 
     private final Statement root;
 
     private String updateType;
-
+    // zeng:  `output column -> original set` mapping of `insert、create view、create table as select`
     private Optional<UpdateTarget> target = Optional.empty();
 
     private final Map<NodeRef<Parameter>, Expression> parameters;
-
+    // zeng: `name query ref` table node -> query
     private final Map<NodeRef<Table>, Query> namedQueries = new LinkedHashMap<>();
 
+    // zeng: node -> node scope
     private final Map<NodeRef<Node>, Scope> scopes = new LinkedHashMap<>();
 
     private final Map<NodeRef<Expression>, Type> types = new LinkedHashMap<>();
-
+    // zeng: query node -> select expression set
     private final Map<NodeRef<Node>, List<SelectExpression>> selectExpressions = new LinkedHashMap<>();
-
+    // zeng: '*' node -> field set
     private final Map<NodeRef<AllColumns>, List<Field>> selectAllResultFields = new LinkedHashMap<>();
 
+    // field -> `origin column recursive used by the field of key` set
     private final Multimap<Field, SourceColumn> originColumnDetails = ArrayListMultimap.create();
 
+    // zeng: relation node -> relation alias
     private final Map<NodeRef<Relation>, QualifiedName> relationNames = new LinkedHashMap<>();
 
+    // zeng: alias relation node set
     private final Set<NodeRef<Relation>> aliasedRelations = new LinkedHashSet<>();
 
     private final Map<NodeRef<Unnest>, UnnestAnalysis> unnestAnalysis = new LinkedHashMap<>();
-
+    // zeng: `column of table` be used -> location
     private final Multimap<SourceColumn, NodeLocation> originFields = ArrayListMultimap.create();
 
+    // zeng: catalog.schema.table -> table node location
     private final Multimap<QualifiedObjectName, NodeLocation> originTables = ArrayListMultimap.create();
-
+    // zeng: expression node -> source relation field set be used
     private final Multimap<NodeRef<Expression>, Field> fieldLineage = ArrayListMultimap.create();
 
+    //
     // Store resolved window specifications for window functions and row pattern measures
+    // zeng: window function node -> window
     private final Map<NodeRef<Node>, ResolvedWindow> windows = new LinkedHashMap<>();
 
     // map inner recursive reference in the expandable query to the recursion base scope
     private final Map<NodeRef<Node>, Scope> expandableBaseScopes = new LinkedHashMap<>();
-
+    // zeng: expression node ->  `resolve field used by expression` set
     private final Map<NodeRef<Expression>, ResolvedField> columnReferences = new LinkedHashMap<>();
 
     private final Map<NodeRef<Join>, Expression> joins = new LinkedHashMap<>();
     private final Map<NodeRef<Join>, JoinUsingAnalysis> joinUsing = new LinkedHashMap<>();
-    private final Multimap<Field, Expression> where = ArrayListMultimap.create();
-    private final Map<NodeRef<QuerySpecification>, Expression> having = new LinkedHashMap<>();
+    private final Multimap<Field, Expression> where = ArrayListMultimap.create();   // zeng: `field used by where expression` set -> where exression
+    private final Map<NodeRef<QuerySpecification>, Expression> having = new LinkedHashMap<>();  // zeng: query node -> having expression
     private final Map<NodeRef<Node>, List<Expression>> orderByExpressions = new LinkedHashMap<>();
     private final Map<NodeRef<QuerySpecification>, GroupingSetAnalysis> groupingSets = new LinkedHashMap<>();
 
     // Store resolved window specifications defined in WINDOW clause
+    // zeng: query node -> (window name -> window definition) set
     private final Map<NodeRef<QuerySpecification>, Map<CanonicalizationAware<Identifier>, ResolvedWindow>> windowDefinitions = new LinkedHashMap<>();
 
     private final Map<NodeRef<QuerySpecification>, List<GroupingOperation>> groupingOperations = new LinkedHashMap<>();
-
+    // zeng: query node -> `agg function in query` set
     private final Map<NodeRef<QuerySpecification>, List<FunctionCall>> aggregates = new LinkedHashMap<>();
 
     private final Map<NodeRef<OrderBy>, List<Expression>> orderByAggregates = new LinkedHashMap<>();
@@ -465,9 +474,9 @@ public class Analysis {
     }
 
     private static class UpdateTarget {
-        private final QualifiedObjectName name;
-        private final Optional<Table> table;
-        private final Optional<List<OutputColumn>> columns;
+        private final QualifiedObjectName name; // zeng: target table
+        private final Optional<Table> table;    // zeng: target table node
+        private final Optional<List<OutputColumn>> columns;  // zeng: `column of target table -> original column of original table` mapping
 
         public UpdateTarget(QualifiedObjectName name, Optional<Table> table, Optional<List<OutputColumn>> columns) {
             this.name = requireNonNull(name, "name is null");

@@ -5,7 +5,7 @@ import java.util.Objects;
 import static com.google.common.base.MoreObjects.toStringHelper;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
-
+// zeng: relation id + field index
 public final class FieldId {
     public static FieldId from(ResolvedField field) {
         requireNonNull(field, "field is null");

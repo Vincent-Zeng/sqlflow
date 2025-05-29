@@ -20,7 +20,9 @@ import static java.util.Objects.requireNonNull;
  */
 @Immutable
 public class RelationType {
+    // output field
     private final List<Field> visibleFields;
+    // all field
     private final List<Field> allFields;
 
     private final Map<Field, Integer> fieldIndexes;
