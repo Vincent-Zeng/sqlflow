@@ -489,7 +489,7 @@ public class StatementAnalyzer {
 
                 if (!isRecursive) {
                     Query query = withQuery.getQuery();
-                    process(query, withScopeBuilder.build());
+                    process(query, withScopeBuilder.build());   // zeng: 如此后面的named query可以通过scope引用到前面的named query的name
 
                     // check if all or none of the columns are explicitly alias
                     if (withQuery.getColumnNames().isPresent()) {
@@ -687,7 +687,7 @@ public class StatementAnalyzer {
             RelationType descriptor = relationType.withAlias(relation.getAlias().getValue(), aliases);
 
             checkArgument(inputFields.size() == descriptor.getAllFieldCount(), "Expected %s fields, got %s", descriptor.getAllFieldCount(), inputFields.size());
-
+            // zeng: field -> origin column set
             Streams.forEachPair(descriptor.getAllFields().stream(), inputFields.stream(),
                     (newField, field) -> analysis.addSourceColumns(newField, analysis.getSourceColumns(field)));
 
@@ -747,8 +747,9 @@ public class StatementAnalyzer {
             }
 
             Scope left = process(node.getLeft(), scope);
-            Scope right = process(node.getRight(), isLateralRelation(node.getRight()) ? Optional.of(left) : scope);
 
+            Scope right = process(node.getRight(), isLateralRelation(node.getRight()) ? Optional.of(left) : scope); // zeng: lateral scope可以引用from部分的scope
+            // todo next
             if (isLateralRelation(node.getRight())) {
                 if (node.getType() == Join.Type.RIGHT || node.getType() == Join.Type.FULL) {
                     Stream<Expression> leftScopeReferences = ScopeReferenceExtractor.getReferencesToScope(node.getRight(), analysis, left);
@@ -1395,13 +1396,13 @@ public class StatementAnalyzer {
                     Optional<QualifiedObjectName> originTable = Optional.empty();
                     Optional<String> originColumn = Optional.empty();
                     QualifiedName name = null;
-
+                    // zeng: if is simple reference
                     if (expression instanceof Identifier) {
                         name = QualifiedName.of(((Identifier) expression).getValue());
                     } else if (expression instanceof DereferenceExpression) {
                         name = DereferenceExpression.getQualifiedName((DereferenceExpression) expression);
                     }
-
+                    // zeng: simple reference
                     if (name != null) {
                         List<Field> matchingFields = sourceScope.getRelationType().resolveFields(name, caseSensitive);
                         if (!matchingFields.isEmpty()) {
@@ -1415,7 +1416,7 @@ public class StatementAnalyzer {
                             field = Optional.of(getLast(name.getOriginalParts()));
                         }
                     }
-
+                    // zeng: if not simple reference, origin table、origin column is null
                     Field newField = Field.newUnqualified(field.map(Identifier::getValue), originTable, originColumn, column.getAlias().isPresent()); // TODO don't use analysis as a side-channel. Use outputExpressions to look up the type
                     if (field.isPresent() && field.get().getLocation().isPresent()) {
                         newField.setLocation(field.get().getLocation().get());
@@ -1458,7 +1459,7 @@ public class StatementAnalyzer {
         private List<Expression> descriptorToFields(Scope scope) {
             ImmutableList.Builder<Expression> builder = ImmutableList.builder();
             for (int fieldIndex = 0; fieldIndex < scope.getRelationType().getAllFieldCount(); fieldIndex++) {
-                FieldReference expression = new FieldReference(fieldIndex);
+                FieldReference expression = new FieldReference(fieldIndex); // field reference by index
                 builder.add(expression);
                 ExpressionAnalyzer.analyzeExpression(scope, analysis, metadataService, sqlFlowParser, expression);
             }

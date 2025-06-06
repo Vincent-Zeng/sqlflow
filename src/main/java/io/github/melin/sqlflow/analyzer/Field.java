@@ -12,9 +12,9 @@ import static java.util.Objects.requireNonNull;
 public class Field {
     private NodeLocation location;
 
-    // zeng: table of column relative, if this field is recursive from the column of the table
+    // zeng: table of column relative, if this field is recursive simple reference from the column of the table, or null
     private final Optional<QualifiedObjectName> originTable;
-    // zeng: column of table relative, if this field is recursive from the column of the table
+    // zeng: column of table relative, if this field is recursive simple reference from the column of the table, or null
     private final Optional<String> originColumnName;
     // zeng: alias of relation which contain field
     private final Optional<QualifiedName> relationAlias;

@@ -6,10 +6,10 @@ import static java.util.Objects.requireNonNull;
 
 @Immutable
 public class ResolvedField {
-    private final Scope scope;
-    private final Field field;
-    private final int hierarchyFieldIndex;
-    private final int relationFieldIndex;
+    private final Scope scope;  // zeng: scope where field output
+    private final Field field;  // zeng: field
+    private final int hierarchyFieldIndex;  // zeng: field index if scope line unfold
+    private final int relationFieldIndex;   // zeng: field index in current scope
     private final boolean local;
 
     public ResolvedField(Scope scope, Field field, int hierarchyFieldIndex, int relationFieldIndex, boolean local) {

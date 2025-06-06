@@ -59,7 +59,7 @@ public class Analysis {
     // zeng: relation node -> relation alias
     private final Map<NodeRef<Relation>, QualifiedName> relationNames = new LinkedHashMap<>();
 
-    // zeng: alias relation node set
+    // zeng: relation in alias relation node set
     private final Set<NodeRef<Relation>> aliasedRelations = new LinkedHashSet<>();
 
     private final Map<NodeRef<Unnest>, UnnestAnalysis> unnestAnalysis = new LinkedHashMap<>();
@@ -68,7 +68,7 @@ public class Analysis {
 
     // zeng: catalog.schema.table -> table node location
     private final Multimap<QualifiedObjectName, NodeLocation> originTables = ArrayListMultimap.create();
-    // zeng: expression node -> source relation field set be used
+    // zeng: expression node -> `source relation field be used` set
     private final Multimap<NodeRef<Expression>, Field> fieldLineage = ArrayListMultimap.create();
 
     //
@@ -80,10 +80,10 @@ public class Analysis {
     private final Map<NodeRef<Node>, Scope> expandableBaseScopes = new LinkedHashMap<>();
     // zeng: expression node ->  `resolve field used by expression` set
     private final Map<NodeRef<Expression>, ResolvedField> columnReferences = new LinkedHashMap<>();
-
+    // zeng: join node -> join on expression
     private final Map<NodeRef<Join>, Expression> joins = new LinkedHashMap<>();
     private final Map<NodeRef<Join>, JoinUsingAnalysis> joinUsing = new LinkedHashMap<>();
-    private final Multimap<Field, Expression> where = ArrayListMultimap.create();   // zeng: `field used by where expression` set -> where exression
+    private final Multimap<Field, Expression> where = ArrayListMultimap.create();   // zeng: `field used by where expression` set -> where expression
     private final Map<NodeRef<QuerySpecification>, Expression> having = new LinkedHashMap<>();  // zeng: query node -> having expression
     private final Map<NodeRef<Node>, List<Expression>> orderByExpressions = new LinkedHashMap<>();
     private final Map<NodeRef<QuerySpecification>, GroupingSetAnalysis> groupingSets = new LinkedHashMap<>();

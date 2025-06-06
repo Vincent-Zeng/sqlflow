@@ -42,10 +42,10 @@ public class Scope {
     // zeng: relation node of current relation
     private final RelationId relationId;
 
-    // zeng: current relation info
+    // zeng: current relation output
     private final RelationType relation;
 
-    // zeng: with query name -> with query
+    // zeng: when is With Scope, mean with query name -> with query. 因为relation字段已经不足以表示这种情况，所以output通过namedQueries表示.
     private final Map<String, WithQuery> namedQueries;
     private final boolean caseSensitive;
 

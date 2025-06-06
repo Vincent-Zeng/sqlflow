@@ -70,7 +70,7 @@ public class ExpressionAnalyzer {
     private final Set<NodeRef<FunctionCall>> patternRecognitionFunctions = new LinkedHashSet<>();
 
     // Track referenced fields from source relation node
-    private final Multimap<NodeRef<Node>, Field> referencedFields = HashMultimap.create();  // zeng: source node -> `field be used` set
+    private final Multimap<NodeRef<Node>, Field> referencedFields = HashMultimap.create();  // zeng: relation node -> `field be used` set
 
     // Record fields prefixed with labels in row pattern recognition context
     private final Map<NodeRef<DereferenceExpression>, LabelPrefixedReference> labelDereferences = new LinkedHashMap<>();
@@ -1014,7 +1014,7 @@ public class ExpressionAnalyzer {
         analyzer.analyze(expression, scope);
 
         updateAnalysis(analysis, analyzer);
-        analysis.addExpressionFields(expression, analyzer.getSourceFields());
+        analysis.addExpressionFields(expression, analyzer.getSourceFields());   // zeng: todo from a, b join c on a.one = c.one 的情况下a.one这个字段不在source fields里, 因为scope里是b join c的output
         analyzer.getSourceFields().forEach(field -> {
             if (field.getOriginTable().isPresent() && field.getOriginColumnName().isPresent()) {
                 Analysis.SourceColumn sourceColumn = new Analysis.SourceColumn(field.getOriginTable().get(),
