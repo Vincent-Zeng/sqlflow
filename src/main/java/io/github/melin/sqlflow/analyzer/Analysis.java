@@ -48,7 +48,7 @@ public class Analysis {
     private final Map<NodeRef<Node>, Scope> scopes = new LinkedHashMap<>();
 
     private final Map<NodeRef<Expression>, Type> types = new LinkedHashMap<>();
-    // zeng: query node -> select expression set
+    // zeng: query node -> select expression set, expression偏语法，field偏语义
     private final Map<NodeRef<Node>, List<SelectExpression>> selectExpressions = new LinkedHashMap<>();
     // zeng: '*' node -> field set
     private final Map<NodeRef<AllColumns>, List<Field>> selectAllResultFields = new LinkedHashMap<>();

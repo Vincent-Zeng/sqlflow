@@ -461,7 +461,6 @@ public class StatementAnalyzer {
             With with = withOpt.get();
             Scope.Builder withScopeBuilder = scopeBuilder(scope);
 
-            // zeng: todo next round 2
             for (WithQuery withQuery : with.getQueries()) {
                 String name = withQuery.getName().getValue();
                 if (!caseSensitive) {

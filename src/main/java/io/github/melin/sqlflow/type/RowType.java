@@ -85,7 +85,7 @@ public class RowType implements Type {
         private final Optional<String> name;
 
         public Field(Optional<String> name, Type type) {
-            this.type = requireNonNull(type, "type is null");
+            this.type = type;
             this.name = requireNonNull(name, "name is null");
         }
 
