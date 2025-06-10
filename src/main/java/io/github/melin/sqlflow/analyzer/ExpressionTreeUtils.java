@@ -73,6 +73,7 @@ public final class ExpressionTreeUtils {
                 .collect(toImmutableList());
     }
 
+    // zeng: 把所有tree中的node flat成一个列表
     private static List<Node> linearizeNodes(Node node) {
         ImmutableList.Builder<Node> nodes = ImmutableList.builder();
         new DefaultExpressionTraversalVisitor<Void>() {

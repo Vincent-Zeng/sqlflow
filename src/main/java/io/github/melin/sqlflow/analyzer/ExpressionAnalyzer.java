@@ -61,7 +61,7 @@ public class ExpressionAnalyzer {
     private final Set<NodeRef<Expression>> typeOnlyCoercions = new LinkedHashSet<>();
 
     private final Set<NodeRef<InPredicate>> subqueryInPredicates = new LinkedHashSet<>();
-    private final Map<NodeRef<Expression>, ResolvedField> columnReferences = new LinkedHashMap<>(); // zeng: expression node ->  `resolve field used by expression` set
+    private final Map<NodeRef<Expression>, ResolvedField> columnReferences = new LinkedHashMap<>(); // zeng: column reference expression node ->  `resolve field`
     private final Set<NodeRef<QuantifiedComparisonExpression>> quantifiedComparisons = new LinkedHashSet<>();
     private final Set<NodeRef<FunctionCall>> windowFunctions = new LinkedHashSet<>();
 
@@ -1014,6 +1014,7 @@ public class ExpressionAnalyzer {
         analyzer.analyze(expression, scope);
 
         updateAnalysis(analysis, analyzer);
+        // zeng: expression -> `source relation field be used` recursive set
         analysis.addExpressionFields(expression, analyzer.getSourceFields());   // zeng: todo from a, b join c on a.one = c.one 的情况下a.one这个字段不在source fields里, 因为scope里是b join c的output
         analyzer.getSourceFields().forEach(field -> {
             if (field.getOriginTable().isPresent() && field.getOriginColumnName().isPresent()) {

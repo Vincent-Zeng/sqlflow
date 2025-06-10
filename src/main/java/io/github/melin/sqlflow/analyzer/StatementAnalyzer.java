@@ -279,7 +279,7 @@ public class StatementAnalyzer {
         private Scope createScopeForCommonTableExpression(Table table, Optional<Scope> scope, WithQuery withQuery) {
             Query query = withQuery.getQuery();
             analysis.registerNamedQuery(table, query);
-
+            // zeng: get with query node relative scope
             // re-alias the fields with the name assigned to the query in the WITH declaration
             RelationType queryDescriptor = analysis.getOutputDescriptor(query);
 
@@ -461,6 +461,7 @@ public class StatementAnalyzer {
             With with = withOpt.get();
             Scope.Builder withScopeBuilder = scopeBuilder(scope);
 
+            // zeng: todo next round 2
             for (WithQuery withQuery : with.getQueries()) {
                 String name = withQuery.getName().getValue();
                 if (!caseSensitive) {
@@ -749,7 +750,7 @@ public class StatementAnalyzer {
             Scope left = process(node.getLeft(), scope);
 
             Scope right = process(node.getRight(), isLateralRelation(node.getRight()) ? Optional.of(left) : scope); // zeng: lateral scope可以引用from部分的scope
-            // todo next
+
             if (isLateralRelation(node.getRight())) {
                 if (node.getType() == Join.Type.RIGHT || node.getType() == Join.Type.FULL) {
                     Stream<Expression> leftScopeReferences = ScopeReferenceExtractor.getReferencesToScope(node.getRight(), analysis, left);

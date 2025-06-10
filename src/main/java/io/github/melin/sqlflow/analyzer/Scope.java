@@ -38,7 +38,7 @@ import static java.util.Objects.requireNonNull;
 public class Scope {
     // zeng: 本子查询往上一层的查询。因为关系代数其实是line，所以一个parent和child是一对一的。
     private final Optional<Scope> parent;
-    private final boolean queryBoundary;
+    private final boolean queryBoundary;    // zeng: sub query scope block boundary
     // zeng: relation node of current relation
     private final RelationId relationId;
 
@@ -86,7 +86,7 @@ public class Scope {
         return scope;
     }
 
-    // zeng: find root of scope tree
+    // zeng: find root of sub query scope
     public Optional<Scope> getOuterQueryParent() {
         Scope scope = this;
         while (scope.parent.isPresent()) {
@@ -129,6 +129,7 @@ public class Scope {
         return relation;
     }
 
+    // zeng: find scope node bottom to up in current sub query scope block
     /**
      * Starting from this, finds the closest scope which satisfies given predicate,
      * within the query boundary.
@@ -176,7 +177,7 @@ public class Scope {
         Optional<Scope> scopeForTableReference = Optional.empty();
         Optional<Scope> scopeForFieldReference = Optional.empty();
 
-        if (length <= 3) {
+        if (length <= 3) {  // zeng: find name relative scope
             scopeForTableReference = findLocally(scope -> scope.getRelationType()
                     .getAllFields().stream()
                     .anyMatch(field -> field.matchesPrefix(Optional.of(identifierChain))));

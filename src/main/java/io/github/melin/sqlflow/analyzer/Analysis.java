@@ -78,7 +78,7 @@ public class Analysis {
 
     // map inner recursive reference in the expandable query to the recursion base scope
     private final Map<NodeRef<Node>, Scope> expandableBaseScopes = new LinkedHashMap<>();
-    // zeng: expression node ->  `resolve field used by expression` set
+    // zeng: column reference expression node ->  `resolve field`
     private final Map<NodeRef<Expression>, ResolvedField> columnReferences = new LinkedHashMap<>();
     // zeng: join node -> join on expression
     private final Map<NodeRef<Join>, Expression> joins = new LinkedHashMap<>();

@@ -10,7 +10,7 @@ public class ResolvedField {
     private final Field field;  // zeng: field
     private final int hierarchyFieldIndex;  // zeng: field index if scope line unfold
     private final int relationFieldIndex;   // zeng: field index in current scope
-    private final boolean local;
+    private final boolean local;    // zeng: 是否非源表字段？
 
     public ResolvedField(Scope scope, Field field, int hierarchyFieldIndex, int relationFieldIndex, boolean local) {
         this.scope = requireNonNull(scope, "scope is null");
