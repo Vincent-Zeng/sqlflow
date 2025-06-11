@@ -54,7 +54,7 @@ public class ExpressionAnalyzer {
 
     // zeng: expression node -> return data type
     private final Map<NodeRef<Expression>, Type> expressionTypes = new LinkedHashMap<>();
-
+    // zeng: sub query expression node set
     private final Set<NodeRef<SubqueryExpression>> subqueries = new LinkedHashSet<>();
     private final Set<NodeRef<ExistsPredicate>> existsSubqueries = new LinkedHashSet<>();
     private final Map<NodeRef<Expression>, Type> expressionCoercions = new LinkedHashMap<>();
@@ -745,6 +745,17 @@ public class ExpressionAnalyzer {
         public Type visitFieldReference(FieldReference node, Context context) {
             ResolvedField field = baseScope.getField(node.getFieldIndex());
             return handleResolvedField(node, field, context);
+        }
+
+        @Override
+        public Type visitLogicalExpression(LogicalExpression node, Context context) {
+            final List<Expression> terms = node.getTerms();
+
+            for (final Expression term : terms) {
+                process(term, context);
+            }
+
+            return setExpressionType(node, UNKNOWN);
         }
 
         @Override

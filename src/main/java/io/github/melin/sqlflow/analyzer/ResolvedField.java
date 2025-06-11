@@ -3,14 +3,14 @@ package io.github.melin.sqlflow.analyzer;
 import javax.annotation.concurrent.Immutable;
 
 import static java.util.Objects.requireNonNull;
-
+// zeng: field reference is resolved to resolve field (any relation field, not must be origin column)
 @Immutable
 public class ResolvedField {
     private final Scope scope;  // zeng: scope where field output
     private final Field field;  // zeng: field
-    private final int hierarchyFieldIndex;  // zeng: field index if scope line unfold
+    private final int hierarchyFieldIndex;  // zeng: field index if current sub query scope block unfold
     private final int relationFieldIndex;   // zeng: field index in current scope
-    private final boolean local;    // zeng: 是否非源表字段？
+    private final boolean local;    // zeng: if field is in current sub query scope block
 
     public ResolvedField(Scope scope, Field field, int hierarchyFieldIndex, int relationFieldIndex, boolean local) {
         this.scope = requireNonNull(scope, "scope is null");

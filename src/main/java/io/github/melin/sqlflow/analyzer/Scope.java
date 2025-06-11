@@ -112,7 +112,7 @@ public class Scope {
 
         return Optional.empty();
     }
-
+    // zeng: current scope all output field count, include all ancestor scope in current sub query scope block
     public int getLocalScopeFieldCount() {
         int parent = getLocalParent()
                 .map(Scope::getLocalScopeFieldCount)

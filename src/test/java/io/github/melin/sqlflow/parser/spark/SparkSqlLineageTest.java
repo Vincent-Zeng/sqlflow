@@ -36,16 +36,19 @@ public class SparkSqlLineageTest extends AbstractSqlLineageTest {
         sb.append("           ),                                                                                                  \n");
         sb.append("     a2 as (                                                                                                   \n");
         sb.append("             select                                                                                            \n");
+        sb.append("               t1.dd as tdd,                                                                                   \n");
         sb.append("               (select desc as i_desc, t1.desc as o_desc from a1 i1 where i1.desc = t1.desc limit 1) as itest, \n");
-        sb.append("               t1.*,                                                                                           \n");
-        sb.append("               t1.dd as tdd                                                                                    \n");
+        sb.append("               t1.*                                                                                            \n");
         sb.append("             from a1 t1                                                                                        \n");
         sb.append("           )                                                                                                   \n");
         sb.append("insert overwrite table db2.Demo                                                                                \n");
         sb.append("select                                                                                                         \n");
         sb.append("  t2.*                                                                                                         \n");
         sb.append("from a1 t1                                                                                                     \n");
-        sb.append("left join a2 t2                                                                                                \n");
+        sb.append("left join (                                                                                                    \n");
+        sb.append("            select *                                                                                           \n");
+        sb.append("            from a2                                                                                            \n");
+        sb.append("          ) t2                                                                                                 \n");
         sb.append("on t1.desc = t2.desc                                                                                           \n");
 
         final String sql = sb.toString();
