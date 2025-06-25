@@ -8,9 +8,13 @@ import static com.google.common.base.Preconditions.checkArgument;
  * huaixin 2021/12/18 9:52 PM
  */
 public final class NodeLocation {
+    // node第一个token在第几行，从1开始
     private final int line;
+    // node第一个token在第几列，从1开始
     private final int column;
+    // node第一个字符在整个sql char stream中的index
     private final int startIndex;
+    // node最后一个字符在整个sql char stream中的index
     private final int stopIndex;
 
     public NodeLocation(int line, int column, int startIndex, int stopIndex) {
