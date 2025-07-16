@@ -1,7 +1,5 @@
 package io.github.melin.sqlflow.analyzer;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.LinkedHashMultimap;
 import io.github.melin.sqlflow.AstVisitor;
 import io.github.melin.sqlflow.SqlFlowException;
 import io.github.melin.sqlflow.function.OperatorType;
@@ -707,7 +705,7 @@ public class ExpressionAnalyzer {
                 if (resolvedField.isPresent()) {
                     return handleResolvedField(node, resolvedField.get(), context);
                 }
-                if (!scope.isColumnReference(qualifiedName)) {
+                if (!scope.isNestedField(qualifiedName)) {
                     return null; // fix 字段来自常量字段
                     //throw missingAttributeException(node, qualifiedName);
                 }

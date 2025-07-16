@@ -242,7 +242,8 @@ public class Scope {
             field.setLocation(node.getLocation().get());
             return Optional.of(asResolvedField(field, parentFieldCount, local));
         } else {
-            if (isColumnReference(name, relation)) {
+            // zeng: 是否是row type等字段内的嵌套字段
+            if (isNestedField(name, relation)) {
                 return Optional.empty();
             }
             if (parent.isPresent()) {
@@ -269,10 +270,10 @@ public class Scope {
         return new ResolvedField(this, field, hierarchyFieldIndex, relationFieldIndex, local);
     }
 
-    public boolean isColumnReference(QualifiedName name) {
+    public boolean isNestedField(QualifiedName name) {
         Scope current = this;
         while (current != null) {
-            if (isColumnReference(name, current.relation)) {
+            if (isNestedField(name, current.relation)) {
                 return true;
             }
             current = current.parent.orElse(null);
@@ -281,7 +282,7 @@ public class Scope {
         return false;
     }
 
-    private boolean isColumnReference(QualifiedName name, RelationType relation) {
+    private boolean isNestedField(QualifiedName name, RelationType relation) {
         while (name.getPrefix().isPresent()) {
             name = name.getPrefix().get();
             if (!relation.resolveFields(name, caseSensitive).isEmpty()) {
