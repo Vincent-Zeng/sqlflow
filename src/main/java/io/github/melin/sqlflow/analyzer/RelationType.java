@@ -34,6 +34,8 @@ public class RelationType {
     public RelationType(List<Field> fields) {
         requireNonNull(fields, "fields is null");
         this.allFields = ImmutableList.copyOf(fields);
+
+        // zeng: trino的代码中是 this.visibleFields = ImmutableList.copyOf(Iterables.filter(fields, not(Field::isHidden)));  行号字段、实现辅助字段的hidden会被设置为true, 这里等于去掉了
         this.visibleFields = fields.stream()
                 .collect(toImmutableList());
 

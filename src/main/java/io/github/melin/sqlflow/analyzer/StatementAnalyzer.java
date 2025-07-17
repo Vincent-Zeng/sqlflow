@@ -470,6 +470,7 @@ public class StatementAnalyzer {
                     throw semanticException(withQuery, "WITH query name '%s' specified more than once", name);
                 }
 
+                // zeng: recursive，named query body中递归查询当前named query
                 boolean isRecursive = false;
                 if (with.isRecursive()) {
                     // cannot nest pattern recognition within recursive query
