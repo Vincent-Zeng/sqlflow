@@ -1251,7 +1251,9 @@ public class StatementAnalyzer {
                         return;
                     }
                 }
+
                 // identifierChainBasis.get().getBasisType == FIELD or target expression isn't a QualifiedName
+                // zeng: 因为支持的规则是`primaryExpression DOT ASTERISK (AS columnAliases)?    #selectAll，target是表达式`primaryExpression`，这和spark的`qualifiedName DOT ASTERISK    #star`不同
                 analyzeAllFieldsFromRowTypeExpression(expression, allColumns, node, scope, outputExpressionBuilder, selectExpressionBuilder);
             } else {
                 // analyze AllColumns without target expression ('*')
