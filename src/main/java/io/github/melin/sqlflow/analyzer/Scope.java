@@ -13,11 +13,12 @@
  */
 package io.github.melin.sqlflow.analyzer;
 
+import com.google.common.collect.ImmutableMap;
 import io.github.melin.sqlflow.tree.AllColumns;
 import io.github.melin.sqlflow.tree.QualifiedName;
 import io.github.melin.sqlflow.tree.WithQuery;
 import io.github.melin.sqlflow.tree.expression.Expression;
-import com.google.common.collect.ImmutableMap;
+import io.github.melin.sqlflow.type.RowType;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.concurrent.Immutable;
@@ -27,10 +28,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import static io.github.melin.sqlflow.analyzer.SemanticExceptions.*;
 import static com.google.common.base.MoreObjects.toStringHelper;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Iterables.getOnlyElement;
+import static io.github.melin.sqlflow.analyzer.SemanticExceptions.ambiguousAttributeException;
+import static io.github.melin.sqlflow.analyzer.SemanticExceptions.missingAttributeException;
+import static io.github.melin.sqlflow.analyzer.SemanticExceptions.semanticException;
 import static java.util.Objects.requireNonNull;
 
 // zeng: 本层子查询作用域context
@@ -188,8 +191,9 @@ public class Scope {
                     .getAllFields().stream()
                     .anyMatch(field -> field.matchesPrefix(Optional.of(QualifiedName.of(identifierChain.getParts().get(0))))
                             && field.getName().isPresent()
-                            && field.getName().get().equals(identifierChain.getParts().get(1))));
-            //&& field.getType() instanceof RowType
+                            && field.getName().get().equals(identifierChain.getParts().get(1))
+                            && field.getType() instanceof RowType
+                    ));
         }
 
         if (scopeForTableReference.isPresent() && scopeForFieldReference.isPresent()) {
