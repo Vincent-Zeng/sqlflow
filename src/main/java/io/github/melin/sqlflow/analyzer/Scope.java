@@ -186,7 +186,7 @@ public class Scope {
                     .anyMatch(field -> field.matchesPrefix(Optional.of(identifierChain))));
         }
 
-        // zeng: trino中只有a.*中，a只允许被解析为表名，所以这里length >= 2。而spark中，a.*中a可以被解析为字段名。
+        // zeng: trino中只有a.*中，a只允许被解析为表名，所以这里length >= 2。而spark中，a.*中a可以被解析为字段名, 例如`select one.* from (SELECT named_struct('x',1) as one) t2`是可以正常查询的
         if (length >= 2) {
             scopeForFieldReference = findLocally(scope -> scope.getRelationType()
                     .getAllFields().stream()
