@@ -1025,6 +1025,7 @@ public class ExpressionAnalyzer {
         updateAnalysis(analysis, analyzer);
         // zeng: expression -> `source relation field be used` recursive set
         analysis.addExpressionFields(expression, analyzer.getSourceFields());   // zeng: todo from a, b join c on a.one = c.one 的情况下a.one这个字段不在source fields里, 因为scope里是b join c的output
+
         analyzer.getSourceFields().forEach(field -> {
             if (field.getOriginTable().isPresent() && field.getOriginColumnName().isPresent()) {
                 Analysis.SourceColumn sourceColumn = new Analysis.SourceColumn(field.getOriginTable().get(),

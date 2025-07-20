@@ -1247,7 +1247,6 @@ public class StatementAnalyzer {
                             throw semanticException(allColumns, "SELECT * not allowed from relation that has no columns");
                         }
                         boolean local = scope.isLocalScope(identifierChainBasis.get().getScope().get());
-                        // zeng: 这里使用identifierChainBasis.get().getScope()是因为在expression analyzer解析字段时根据base scope查询字段，这里如果给local scope，那么会重新解析一遍，而且解析可能在local scope匹配到字段，而不是我们认为的这些字段都是这里确定的relation的字段
                         analyzeAllColumnsFromTable(fields, allColumns, node, local ? scope : identifierChainBasis.get().getScope().get(), outputExpressionBuilder, selectExpressionBuilder, relationType, local);
                         return;
                     }
@@ -1303,12 +1302,14 @@ public class StatementAnalyzer {
                 Field field = fields.get(i);
                 Expression fieldExpression;
                 if (local) {
+                    // zeng: FieldReference语义上表示的是local query scope的第几个字段
                     fieldExpression = new FieldReference(relationType.indexOf(field));
                 } else {
                     if (!field.getName().isPresent()) {
                         throw semanticException(node.getSelect(), "SELECT * from outer scope table not supported with anonymous columns");
                     }
                     checkState(field.getRelationAlias().isPresent(), "missing relation alias");
+                    // zeng: 虽然上面的参数scope已经是outer query scope，使用FieldReference也可以解析到字段，但是构造的expression仍然是作为local query的expression，所以如果用FieldReference会破坏 ir tree 语义
                     fieldExpression = new DereferenceExpression(DereferenceExpression.from(field.getRelationAlias().get()), new Identifier(field.getName().get()));
                 }
                 ExpressionAnalyzer.analyzeExpression(scope, analysis, metadataService, sqlFlowParser, fieldExpression);
